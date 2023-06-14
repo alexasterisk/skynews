@@ -15,7 +15,7 @@ Since I made this project in less than a day, it currently only offers Jacob's F
 The `/setup` command is currently a top level command, this will be changed in the future when multiple different categories are available instead of only `/jacobs`.
 
 ## How To Use
-You can either [download the Discord bot to add to your server](https://discord.com/api/oauth2/authorize?client_id=1116970598019629086&permissions=322624&scope=bot) or, if you want to deploy and run the bot for yourself, you can follow the steps below.
+You can either **[just add the Discord bot to your server](https://discord.com/api/oauth2/authorize?client_id=1116970598019629086&permissions=322624&scope=bot)** or, if you want to deploy and run the bot for yourself, you can follow the steps below.
 
 1. [Clone the repository](#cloning-the-repository)
 2. [Create a Discord Bot](#creating-a-bot)
