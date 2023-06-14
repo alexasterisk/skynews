@@ -22,7 +22,8 @@ export default new Subcommand('subscribe')
                 { name: 'Cactus', value: 'cactus' },
                 { name: 'Sugar Cane', value: 'sugar_cane' },
                 { name: 'Nether Wart', value: 'nether_wart' },
-                { name: 'Mushroom', value: 'mushroom' }
+                { name: 'Mushroom', value: 'mushroom' },
+                { name: 'All', value: 'all' }
             )
     )
     .setExecutor(async (_, interaction) => {
@@ -38,7 +39,7 @@ export default new Subcommand('subscribe')
         const userId = interaction.user.id;
         const cropExists = crops.includes(cropChoice);
 
-        if (!cropExists) {
+        if (!cropExists && cropChoice !== 'all') {
             await interaction.editReply({
                 content: `**${cropName}** is not a valid crop name.`
             });
@@ -47,7 +48,8 @@ export default new Subcommand('subscribe')
 
         if (cropChoice === 'all') {
             for (const crop of crops) {
-                await addUserToNotifyList(crop, userId);
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                await addUserToNotifyList(crop, userId).catch(() => {}); // no need for this, junk 'all'
             }
 
             await interaction.editReply({
@@ -55,10 +57,16 @@ export default new Subcommand('subscribe')
                     'You will now be notified when any farming contest is about to start.'
             });
         } else {
-            await addUserToNotifyList(cropChoice, userId);
-
-            await interaction.editReply({
-                content: `You will now be notified when a farming contest including **${cropName}** is about to start.`
-            });
+            await addUserToNotifyList(cropChoice, userId)
+                .catch(async (err: Error) => {
+                    await interaction.editReply({
+                        content: err.message
+                    });
+                })
+                .then(async () => {
+                    await interaction.editReply({
+                        content: `You will now be notified when a farming contest including **${cropName}** is about to start.`
+                    });
+                });
         }
     });

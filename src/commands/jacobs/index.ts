@@ -83,10 +83,14 @@ export const addUserToNotifyList = async (crop: string, userId: string) => {
         cropList = [];
     }
 
-    if (!cropList.includes(userId)) {
-        cropList.push(userId);
+    if (cropList.includes(userId)) {
+        throw new Error(`You are already subscribed to **${getName(crop)}**.`);
     }
 
+    cropList.push(userId);
+    notifyList[crop] = cropList;
+
+    console.log(notifyList);
     await keyv.set('jacobs-notify', notifyList);
 
     let userData = await keyv.get(`userData-${userId}`);
@@ -102,10 +106,12 @@ export const addUserToNotifyList = async (crop: string, userId: string) => {
         };
     }
 
-    const farmingNotifier = populateCrops(userData.farmingNotifier);
+    userData.farmingNotifier = populateCrops(userData.farmingNotifier);
 
-    const subscribedTo = farmingNotifier.subscribedTo;
-    const cropOption = subscribedTo.find((c) => c.name === crop);
+    const cropOption = userData.farmingNotifier.subscribedTo.find(
+        (c) => c.name === crop
+    );
+
     if (cropOption) {
         cropOption.subscribed = true;
     }
@@ -120,29 +126,42 @@ export const removeUserFromNotifyList = async (
     const notifyList = (await keyv.get(
         'jacobs-notify'
     )) as FarmingContestNotifyList;
-    if (!notifyList) return;
+    if (!notifyList)
+        throw new Error(
+            "No notify list found. (this isn't a bug, just no one is subscribed to anything yet)"
+        );
 
     const cropList = notifyList[crop];
-    if (!cropList) return;
+    if (!cropList)
+        throw new Error(`No one is subscribed to **${getName(crop)}** yet!`);
 
-    if (cropList.includes(userId)) {
-        cropList.splice(cropList.indexOf(userId), 1);
-    }
+    if (!cropList.includes(userId))
+        throw new Error(`You are not subscribed to **${getName(crop)}**!`);
+
+    cropList.splice(cropList.indexOf(userId), 1);
+
+    notifyList[crop] = cropList;
 
     await keyv.set('jacobs-notify', notifyList);
 
     const userData = await keyv.get(`userData-${userId}`);
-    if (!userData) return;
+    if (!userData)
+        throw new Error(
+            'No user data found. (this may be a bug, or you may have never used the bot before)'
+        );
     else if (!userData.farmingNotifier) return;
 
     const farmingNotifier = userData.farmingNotifier;
     if (!farmingNotifier.subscribedTo) return;
 
-    const subscribedTo = farmingNotifier.subscribedTo;
-    const cropOption = subscribedTo.find((c) => c.name === crop);
+    const cropOption = farmingNotifier.subscribedTo.find(
+        (c) => c.name === crop
+    );
     if (cropOption) {
         cropOption.subscribed = false;
     }
+
+    userData.farmingNotifier = farmingNotifier;
 
     await keyv.set(`userData-${userId}`, userData);
 };
