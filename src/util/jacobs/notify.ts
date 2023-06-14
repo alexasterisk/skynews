@@ -8,6 +8,7 @@ import {
     FarmingContestNotifyList
 } from '../../commands/jacobs/index.js';
 import { getFarmingContestData } from '../../api/strassburger/jacobscontests.js';
+import { getRandomFooter } from '../index.js';
 
 let sentNewSeasonAlert = false;
 const NEW_SEASON_EMBED = new EmbedBuilder()
@@ -17,7 +18,7 @@ const NEW_SEASON_EMBED = new EmbedBuilder()
     )
     .setColor('Purple')
     .setFooter({
-        text: 'Powered by jacobs.strassburger.org'
+        text: getRandomFooter()
     });
 
 const NEW_LIST_RECEIVED_EMBED = new EmbedBuilder()
@@ -27,14 +28,14 @@ const NEW_LIST_RECEIVED_EMBED = new EmbedBuilder()
     )
     .setColor('Green')
     .setFooter({
-        text: 'Powered by jacobs.strassburger.org'
+        text: getRandomFooter()
     });
 
 const FARMING_CONTEST_EMBED = new EmbedBuilder()
     .setTitle('Farming Contest Starting in 5 minutes!')
     .setColor('Yellow')
     .setFooter({
-        text: 'Made by alex*#2348'
+        text: getRandomFooter()
     });
 
 const sendMessage = async (
@@ -90,8 +91,9 @@ export const loop = new CronJob(
 
         client.user?.setStatus('online');
 
-        let description =
-            '<t:${Math.floor(contest.time.getTime() / 1000)}:R>\n\n';
+        let description = `<t:${Math.floor(
+            nextContest.time.getTime() / 1000
+        )}:R>\n\n`;
 
         for (const crop of nextContest.crops) {
             description += `* ${cropEmojis[crop]} **${getName(crop)}**\n`;
