@@ -1,5 +1,4 @@
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 
 import { keyv } from './util/index.js';
 import { Client } from '@made-simple/discord.js';
