@@ -7,6 +7,9 @@ Yet Another Hypixel Skyblock Bot
 * `/jacobs unsubscribe` - Unsubscribe from a crop notifier.
 * 5 minutes before a farming contest it will send a message in the channel that was set up using `/setup`, and if it is a crop you personally subscribed to, will DM you letting you know you have 5 mintues.
 
+![Upcoming Events](.github/views/next.png)
+![Subscribing to a Crop](.github/views/subscribe.png)
+
 Since I made this project in less than a day, it currently only offers Jacob's Farming Contests. I want to and will add more events in the future, I just wanted to get this uploaded to GitHub as soon as possible. If you have any suggestions, feel free to open an issue or pull request.
 
 The `/setup` command is currently a top level command, this will be changed in the future when multiple different categories are available instead of only `/jacobs`.
