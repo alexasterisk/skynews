@@ -90,7 +90,6 @@ export const addUserToNotifyList = async (crop: string, userId: string) => {
     cropList.push(userId);
     notifyList[crop] = cropList;
 
-    console.log(notifyList);
     await keyv.set('jacobs-notify', notifyList);
 
     let userData = await keyv.get(`userData-${userId}`);

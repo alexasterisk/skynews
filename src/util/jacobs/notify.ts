@@ -31,12 +31,9 @@ const NEW_LIST_RECEIVED_EMBED = new EmbedBuilder()
         text: getRandomFooter()
     });
 
-const FARMING_CONTEST_EMBED = new EmbedBuilder()
-    .setTitle('Farming Contest Starting in 5 minutes!')
-    .setColor('Yellow')
-    .setFooter({
-        text: getRandomFooter()
-    });
+const FARMING_CONTEST_EMBED = new EmbedBuilder().setColor('Yellow').setFooter({
+    text: getRandomFooter()
+});
 
 const sendMessage = async (
     client: Client<object>,
@@ -91,15 +88,17 @@ export const loop = new CronJob(
 
         client.user?.setStatus('online');
 
-        let description = `<t:${Math.floor(
-            nextContest.time.getTime() / 1000
-        )}:R>\n\n`;
+        let description = '';
 
         for (const crop of nextContest.crops) {
             description += `* ${cropEmojis[crop]} **${getName(crop)}**\n`;
         }
 
-        FARMING_CONTEST_EMBED.setDescription(description);
+        FARMING_CONTEST_EMBED.setTitle(
+            `Farming Contest Starting in <t:${Math.floor(
+                nextContest.time.getTime() / 1000
+            )}:R>!`
+        ).setDescription(description);
 
         await sendMessage(client, {
             embeds: [FARMING_CONTEST_EMBED]
