@@ -124,7 +124,7 @@ export const loop = new CronJob(
         }
 
         FARMING_CONTEST_EMBED.setTitle(
-            `Farming Contest Starting in <t:${Math.floor(
+            `Farming Contest Starting <t:${Math.floor(
                 nextContest.time.getTime() / 1000
             )}:R>!`
         )
