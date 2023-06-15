@@ -1,5 +1,5 @@
 import { Client } from '@made-simple/discord.js';
-import { EmbedBuilder, MessageCreateOptions } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { keyv } from '../index.js';
 import { CronJob } from 'cron';
 import {
@@ -34,10 +34,7 @@ const COULDNT_FETCH_DATA = new EmbedBuilder()
     )
     .setColor('Red');
 
-const sendMessage = async (
-    client: Client<object>,
-    message: MessageCreateOptions
-) => {
+const sendMessage = async (client: Client<object>, embed: EmbedBuilder) => {
     const registeredGuilds = (await keyv.get('registeredGuilds')) || [];
     const guilds = client.guilds.cache.filter((guild) =>
         registeredGuilds.includes(guild.id)
@@ -52,7 +49,21 @@ const sendMessage = async (
         const channelObj = guild.channels.cache.get(channel);
         if (!channelObj || !channelObj.isTextBased()) continue;
 
-        await channelObj.send(message);
+        const msg = await channelObj.send({
+            embeds: [embed]
+        });
+
+        setTimeout(async () => {
+            await msg.edit({
+                embeds: [embed.setTitle('Farming Contest In Progress!')]
+            });
+
+            setTimeout(async () => {
+                await msg.edit({
+                    embeds: [embed.setTitle('Farming Contest Ended!')]
+                });
+            }, 20 * 60 * 1000);
+        }, 5 * 60 * 1000);
     }
 };
 
@@ -64,13 +75,12 @@ export const loop = new CronJob(
             async () => {
                 client.user?.setStatus('dnd');
 
-                await sendMessage(client, {
-                    embeds: [
-                        COULDNT_FETCH_DATA.setFooter({
-                            text: getRandomFooter()
-                        })
-                    ]
-                });
+                await sendMessage(
+                    client,
+                    COULDNT_FETCH_DATA.setFooter({
+                        text: getRandomFooter()
+                    })
+                );
 
                 return;
             }
@@ -81,13 +91,12 @@ export const loop = new CronJob(
 
         if (!nextContest) {
             if (!sentNewSeasonAlert) {
-                await sendMessage(client, {
-                    embeds: [
-                        NEW_SEASON_EMBED.setFooter({
-                            text: getRandomFooter()
-                        })
-                    ]
-                });
+                await sendMessage(
+                    client,
+                    NEW_SEASON_EMBED.setFooter({
+                        text: getRandomFooter()
+                    })
+                );
                 sentNewSeasonAlert = true;
             }
 
@@ -97,13 +106,12 @@ export const loop = new CronJob(
         }
 
         if (sentNewSeasonAlert) {
-            await sendMessage(client, {
-                embeds: [
-                    NEW_LIST_RECEIVED_EMBED.setFooter({
-                        text: getRandomFooter()
-                    })
-                ]
-            });
+            await sendMessage(
+                client,
+                NEW_LIST_RECEIVED_EMBED.setFooter({
+                    text: getRandomFooter()
+                })
+            );
             sentNewSeasonAlert = false;
         }
 
@@ -125,9 +133,7 @@ export const loop = new CronJob(
                 text: getRandomFooter()
             });
 
-        await sendMessage(client, {
-            embeds: [FARMING_CONTEST_EMBED]
-        });
+        await sendMessage(client, FARMING_CONTEST_EMBED);
 
         const notifyList = (await keyv.get(
             'jacobs-notify'
@@ -144,9 +150,29 @@ export const loop = new CronJob(
                 const user = await client.users.fetch(userId);
                 if (!user) continue;
 
-                await user.send({
+                const msg = await user.send({
                     embeds: [FARMING_CONTEST_EMBED]
                 });
+
+                setTimeout(async () => {
+                    await msg.edit({
+                        embeds: [
+                            FARMING_CONTEST_EMBED.setTitle(
+                                'Farming Contest In Progress!'
+                            )
+                        ]
+                    });
+
+                    setTimeout(async () => {
+                        await msg.edit({
+                            embeds: [
+                                FARMING_CONTEST_EMBED.setTitle(
+                                    'Farming Contest Ended!'
+                                )
+                            ]
+                        });
+                    }, 20 * 60 * 1000);
+                }, 5 * 60 * 1000);
 
                 messaged.push(userId);
             }
