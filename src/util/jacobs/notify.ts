@@ -16,24 +16,16 @@ const NEW_SEASON_EMBED = new EmbedBuilder()
     .setDescription(
         "Since there's no API for Jacob's Contests, this bot will temporarily be inactive while the list gets manually updated by KartoffelChips.\nSorry for the inconvenience!"
     )
-    .setColor('Purple')
-    .setFooter({
-        text: getRandomFooter()
-    });
+    .setColor('Purple');
 
 const NEW_LIST_RECEIVED_EMBED = new EmbedBuilder()
     .setTitle('New Contest List Received!')
     .setDescription(
         'New contest list received from **jacobs.strassburger.org**, bot is now ready again!'
     )
-    .setColor('Green')
-    .setFooter({
-        text: getRandomFooter()
-    });
+    .setColor('Green');
 
-const FARMING_CONTEST_EMBED = new EmbedBuilder().setColor('Yellow').setFooter({
-    text: getRandomFooter()
-});
+const FARMING_CONTEST_EMBED = new EmbedBuilder().setColor('Yellow');
 
 const sendMessage = async (
     client: Client<object>,
@@ -69,7 +61,11 @@ export const loop = new CronJob(
         if (!nextContest) {
             if (!sentNewSeasonAlert) {
                 await sendMessage(client, {
-                    embeds: [NEW_SEASON_EMBED]
+                    embeds: [
+                        NEW_SEASON_EMBED.setFooter({
+                            text: getRandomFooter()
+                        })
+                    ]
                 });
                 sentNewSeasonAlert = true;
             }
@@ -81,7 +77,11 @@ export const loop = new CronJob(
 
         if (sentNewSeasonAlert) {
             await sendMessage(client, {
-                embeds: [NEW_LIST_RECEIVED_EMBED]
+                embeds: [
+                    NEW_LIST_RECEIVED_EMBED.setFooter({
+                        text: getRandomFooter()
+                    })
+                ]
             });
             sentNewSeasonAlert = false;
         }
@@ -98,7 +98,11 @@ export const loop = new CronJob(
             `Farming Contest Starting in <t:${Math.floor(
                 nextContest.time.getTime() / 1000
             )}:R>!`
-        ).setDescription(description);
+        )
+            .setDescription(description)
+            .setFooter({
+                text: getRandomFooter()
+            });
 
         await sendMessage(client, {
             embeds: [FARMING_CONTEST_EMBED]
