@@ -136,6 +136,8 @@ export const loop = new CronJob(
 
         let messaged: string[] = [];
         for (const crop in notifyList) {
+            if (!nextContest.crops.includes(crop)) continue;
+
             for (const userId of notifyList[crop]) {
                 if (messaged.includes(userId)) continue;
 
