@@ -4,10 +4,6 @@ import { cropEmojis, getName } from './index.js';
 import { getFarmingContestData } from '../../api/strassburger/jacobscontests.js';
 import { getRandomFooter } from '../../util/index.js';
 
-const FARMING_CONTEST_EMBED = new EmbedBuilder().setColor('Yellow').setFooter({
-    text: getRandomFooter()
-});
-
 export default new Subcommand('next')
     .setDescription('Shows the next 3 farming contests.')
     .setExecutor(async (_, interaction) => {
@@ -30,6 +26,12 @@ export default new Subcommand('next')
         );
 
         const count = contests.length > 3 ? 3 : contests.length;
+
+        const FARMING_CONTEST_EMBED = new EmbedBuilder()
+            .setColor('Yellow')
+            .setFooter({
+                text: getRandomFooter()
+            });
 
         for (let i = 0; i < count; i++) {
             const contest = contests[i];
