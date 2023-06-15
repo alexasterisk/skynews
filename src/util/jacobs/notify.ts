@@ -27,6 +27,13 @@ const NEW_LIST_RECEIVED_EMBED = new EmbedBuilder()
 
 const FARMING_CONTEST_EMBED = new EmbedBuilder().setColor('Yellow');
 
+const COULDNT_FETCH_DATA = new EmbedBuilder()
+    .setTitle('Could not fetch data!')
+    .setDescription(
+        'Could not fetch data from **jacobs.strassburger.org**.\nWill still retry in an hour.'
+    )
+    .setColor('Red');
+
 const sendMessage = async (
     client: Client<object>,
     message: MessageCreateOptions
@@ -53,7 +60,21 @@ let client: Client<object>;
 export const loop = new CronJob(
     '0 10 * * * *',
     async () => {
-        const strassburgerData = await getFarmingContestData();
+        const strassburgerData = await getFarmingContestData().catch(
+            async () => {
+                client.user?.setStatus('dnd');
+
+                await sendMessage(client, {
+                    embeds: [
+                        COULDNT_FETCH_DATA.setFooter({
+                            text: getRandomFooter()
+                        })
+                    ]
+                });
+
+                return;
+            }
+        );
         const nextContest = strassburgerData?.find(
             (contest) => contest.time > new Date()
         );

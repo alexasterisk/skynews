@@ -4,10 +4,28 @@ import { cropEmojis, getName } from './index.js';
 import { getFarmingContestData } from '../../api/strassburger/jacobscontests.js';
 import { getRandomFooter } from '../../util/index.js';
 
+const COULDNT_FETCH_DATA = new EmbedBuilder()
+    .setTitle('Could not fetch data!')
+    .setDescription(
+        'Could not fetch data from **jacobs.strassburger.org**.\nWill continue retrying when prompted.'
+    )
+    .setColor('Red');
+
 export default new Subcommand('next')
     .setDescription('Shows the next 3 farming contests.')
     .setExecutor(async (_, interaction) => {
-        const strassburgerData = await getFarmingContestData();
+        const strassburgerData = await getFarmingContestData().catch(
+            async () => {
+                await interaction.reply({
+                    embeds: [
+                        COULDNT_FETCH_DATA.setFooter({
+                            text: getRandomFooter()
+                        })
+                    ]
+                });
+                return;
+            }
+        );
         const nextContest = strassburgerData?.find(
             (contest) => contest.time > new Date()
         );
