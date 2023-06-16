@@ -35,7 +35,7 @@ const COULDNT_FETCH_DATA = new EmbedBuilder()
     .setColor('Red');
 
 const sendMessage = async (client: Client<object>, embed: EmbedBuilder) => {
-    const registeredGuilds = (await keyv.get('registeredGuilds')) || [];
+    const registeredGuilds = (await keyv.get('jacobs-enabled')) || [];
     const guilds = client.guilds.cache.filter((guild) =>
         registeredGuilds.includes(guild.id)
     );
@@ -43,7 +43,7 @@ const sendMessage = async (client: Client<object>, embed: EmbedBuilder) => {
     for (const guild of guilds.values()) {
         if (!guild.available) continue;
 
-        const channel = await keyv.get(`guilds-${guild.id}-news`);
+        const channel = await keyv.get(`guild-${guild.id}-jacobs-channel`);
         if (!channel) continue;
 
         const channelObj = guild.channels.cache.get(channel);
